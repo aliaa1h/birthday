@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>digital scrapbook</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Comic Neue', cursive, sans-serif;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+    .fade-in {
+      animation: fadeIn 2s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .hidden {
+      display: none;
+    }
+    #passcode-screen, #message-screen, #scrapbook-home {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #000 50%, #fff 50%);
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .box h1 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .box input, .box textarea {
+      padding: 0.7rem;
+      width: 200px;
+      margin-bottom: 1rem;
+      border: 2px solid #333;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .box button {
+      padding: 0.7rem 2rem;
+      border: none;
+      background: #000;
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .box button:hover {
+      background: #444;
+    }
+    #error-message {
+      margin-top: 10px;
+      color: red;
+      font-size: 0.9rem;
+    }
+    #message-screen {
+      display: none;
+      background: linear-gradient(135deg, #fff 50%, #000 50%);
+      flex-direction: column;
+      padding: 2rem;
+      text-align: center;
+    }
+    #message-screen p {
+      max-width: 600px;
+      margin-bottom: 2rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+    #scrapbook-home {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      padding: 2rem;
+      background: linear-gradient(135deg, #fff 50%, #000 50%);
+      min-height: 100vh;
+      overflow: hidden;
+      animation: fadeIn 2s ease forwards;
+    }
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      margin: 1rem 0;
+      color: #000;
+    }
+    .back-arrow {
+      position: absolute;
+      left: 1rem;
+      top: 1.5rem;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #000;
+      transition: color 0.3s;
+    }
+    .back-arrow:hover {
+      color: #444;
+    }
+    .scrap-button {
+      background: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 1rem 3rem;
+      margin: 1rem;
+      border-radius: 20px;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      width: 80%;
+      max-width: 300px;
+    }
+    .scrap-button:hover {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+    }
+    .page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      height: 100vh;
+      background: #fff;
+      animation: fadeIn 1s ease forwards;
+      overflow-y: auto;
+    }
+    .page h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+    .back-button {
+      margin-top: 1rem;
+      background: #000;
+      color: #fff;
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .back-button:hover {
+      background: #444;
+    }
+
+    /* Rose animation */
+    .rose-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .rose {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-image: url('https://pngimg.com/d/rose_PNG66714.png');
+      background-size: cover;
+      opacity: 0.8;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-150px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    @media (max-width: 600px) {
+      .scrap-button {
+        font-size: 1rem;
+        padding: 0.8rem 2rem;
+      }
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="passcode-screen" class="fade-in">
+    <div class="box">
+      <h1>Enter Passcode</h1>
+      <form onsubmit="checkPasscode(event)">
+        <input type="password" id="passcode-input" placeholder="Passcode..." />
+        <br />
+        <button type="submit">Enter</button>
+        <div id="error-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="message-screen" class="fade-in">
+    <div class="box">
+      <h1>Happy birthday, once again 🤍</h1>
+    <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background-color: #fff; border-radius: 10px;">
+      <p>
+        Happy birthday Talhaaaaaa, I hope this birthday brings you more than just happiness. I hope it brings you a sense of peace, a sense of purpose, a reminder that you’re not walking through this world unnoticed or unloved. I could go on and on about how much I love you and how grateful I am that you’re mine, but I want to go even deeper than that. I want to talk about what you mean to me in ways that words can barely describe, and yet I’ll try anyway, because you deserve that effort. Talha, you’re not just a person in my life, you are the quiet force that carries me through every difficult moment, the comforting presence that holds all the pieces of me together when everything around me is falling apart. You have this way of existing that makes life feel softer. You don’t just hear me, you absorb me, understand me, and somehow, you always know exactly what to say, or when to say nothing at all. That kind of connection is rare. In a world that moves so fast, where everything feels so temporary, your presence is something I hold onto with all my heart. There’s something about you that makes everything make sense, like all the pain I’ve ever felt had to happen just so I could end up in your arms. You remind me that love isn’t always loud and dramatic. It can be quiet and safe and slow-burning, like the warmth of sunlight on your face in the early morning. The way you love me has rewired my understanding of what love is supposed to feel like. Before you, I thought love was chaos. I thought it was all uncertainty and heartbreak. But you’ve shown me that it can be gentle. That it can be healing. That it can be home. You make me feel like I don’t have to prove anything to be worthy of being loved. I can just be myself fully, unapologetically, and that will always be enough for you. And that’s something I never knew I needed until you came into my life. You’ve changed me in the best ways. You’ve helped me become more patient, more understanding, more hopeful. You’ve given me a reason to look forward to the future. I catch myself daydreaming about our life together constantly. I think about the little moments we’ll share. The quiet evenings, the shared glances across the room, the way your voice will sound when you read a bedtime story to our child, the warmth of your hand on mine when the world outside feels overwhelming. I imagine us building a life that feels like a sanctuary, a place where we’re both safe to be exactly who we are. I want that with you. I want everything with you. And even though we’re separated by distance right now, I’ve never felt closer to anyone in my life. Our connection runs deeper than physical presence. It’s spiritual. It’s as if our souls have always known each other, like they were just waiting for the right time to meet. That’s why every conversation we have, every laugh we share, every silence we sit in together, it all feels meaningful. It all feels like home. You’re the kind of person who makes me believe in things I used to roll my eyes at. Fate. Destiny. Soulmates. I don’t think those are just concepts anymore. I think they’re real, and I think you’re the proof. Your kindness, your depth, your strength, your softness. It all leaves me in awe. I find myself wanting to be better, to grow, to evolve, just so I can be the kind of partner you deserve. You inspire that in me without even trying. And the way you look at the world, the way you carry your love for the people around you, the way you speak about your dreams - it’s all so beautiful. You are beautiful. Not just in appearance, but in essence. Your soul is rare. It’s the kind of soul that brings light to others just by existing. And I’m so unbelievably lucky to bathe in that light every single day. When I think about you, I don’t just feel love, I feel gratitude. I feel gratitude for every second, every message, every memory. I feel grateful for the way you laugh, the way you tell stories, the way your voice softens when you talk to me like I’m the most important person in your world. I feel grateful for your patience, for your resilience, for your heart. I feel grateful that out of everyone in the universe, I somehow ended up with you. It feels like winning a lottery I didn’t even know I was playing. You are a walking miracle in my life, Talha. And no matter how many birthdays go by, I will never stop celebrating you. Not just on this day, but every day. Because every day with you feels like a gift. Every moment shared, every thought exchanged, every future imagined together, it all matters more than I can ever explain. And I want you to know, with every fiber of my being, that I will never stop choosing you. I will never stop being grateful for you. And I will never stop loving you, not for a second. No matter where life takes us, no matter how many storms we face, you will always have me by your side. Every moment we’ve shared, every second that passes, is a piece of something larger. I’ve never quite understood how time works until I met you, how it can stretch on and feel endless when we’re together, and yet somehow slip away when I’m without you. It’s like the world slows down when I’m in your presence, like every detail becomes sharper, clearer, more significant. And I never thought that a love like this could exist. Before you, I had no idea that two people could meet and feel like they’ve known each other for lifetimes. It’s like every conversation we’ve had, every laugh we’ve shared, every silence we’ve been comfortable in, has been leading up to this. We are not just creating memories, Talha, we are creating a life, a life that feels more real than anything I ever imagined. I’m no longer waiting for the moment when I’ll feel complete, because with you, I already do. You’ve filled the spaces I never even knew were empty. There’s a certain stillness in my heart now, a quiet peace that only you could bring. In the midst of all the noise and chaos, your love is the one thing that keeps me grounded, that keeps me going. I’ve never felt more alive, more sure of who I am, than when I’m with you. You make me want to be better, to do better, to love deeper, because that’s what you deserve. You make me believe that love isn’t something that just happens; it’s something that we build, slowly, over time, piece by piece. And I look forward to every day we get to spend together, to every future moment we will create. I want a life full of the little things with you, the quiet mornings, the shared smiles, the calm moments when we don’t need to say anything, because we already know. You’re not just my partner, Talha, you are my safe place, the one person I want to spend every day of my life with. I want to hold onto this feeling, this love, and carry it with me forever, because it’s the one thing in this world that feels like home. There’s no doubt in my mind that you and I were meant to find each other, and I will spend every moment from now on proving to you how grateful I am that you did. I will always choose you, always love you, and always be there for you. I want to grow with you, learn with you, and share a future together, because I can’t imagine a world without you in it. You are everything to me, Talha, and I will always cherish you in ways that words can’t fully express. There’s something profoundly humbling about the way we experience love. It has a way of quietly reshaping everything around us without needing to announce itself. It doesn’t make grand statements or demand attention, but it finds its way into every crevice of our being, altering the smallest details and the biggest moments alike. When I think about love, I think about how it teaches us to see the world not just as a series of events, but as a collection of moments that are rich with meaning if we only pause long enough to acknowledge them. And in those moments, when time seems to stretch and the world fades away, I realize that we, in our vulnerability and openness, have created something that transcends the ordinary. It’s not just that we love each other. It’s that we’ve built a space together where love doesn’t have to be perfect or grandiose. It can simply be enough. Enough to sustain us through the hardest days, enough to carry us through moments of doubt and fear, enough to make every ordinary day feel extraordinary. I think about how much we learn from each other, how much we grow simply by being in one another’s presence. Love isn’t just about comfort. It’s about challenging each other, expanding our understanding of what’s possible, questioning the way we see the world, and yet always doing so with kindness and patience. I’ve learned from you what it means to be truly present. To give yourself fully to someone, to not just exist in the same space, but to inhabit it together, completely. You’ve shown me that love is not a passive experience. It’s an active one. It requires engagement, attention, and care. It asks us to show up, every day, even when we’re tired, even when we’re scared. Because love isn’t just about receiving. It’s about the quiet, powerful act of giving, of offering yourself without expecting anything in return. And in that act of giving, we are transformed. We become something more than we were before. And yet, there’s a deeper truth to it, how love isn’t just about what we give to each other, but what we allow each other to bring out of us. It’s a mirror, in a sense. Love reflects our truest selves back at us, and in the reflection, we see both the beauty and the flaws, the light and the darkness. But what’s extraordinary about it is that, in seeing all of this, we still choose each other. We don’t run away from the truth of who we are, but we embrace it. We hold each other in our entirety, and in doing so, we find a deeper connection, a stronger bond. It’s in the acceptance of each other’s imperfections that love becomes not just a feeling, but a force that can weather any storm. It’s in the way we choose to stay, even when it’s hard, that love becomes a foundation, something we can build upon for the rest of our lives. As I think about this, I realize that our love, in its purest form, isn’t something we can easily define or contain. It isn’t a set of rules or expectations. It’s not something we can hold in our hands or measure by any standard. It’s an experience, something that can only be understood when lived, something that grows and evolves with time, much like we do. It’s the space between us that holds everything together, the space where we laugh, where we cry, where we share our hopes and dreams and fears. That space isn’t empty. It’s full. Full of everything we’ve already given to each other and everything we have yet to discover. It’s in that space that I find the essence of who we are. It’s in that space that I feel the quiet beauty of what we’re building, day by day. In moments of silence, when the world feels distant, I am reminded of the way we communicate without words. It’s the touch of your hand, the way your eyes meet mine, the way we don’t need to say anything to understand exactly what the other person is feeling. I think that’s where the real magic lies, in the way we don’t have to force it. Love, in its truest form, isn’t something we can manipulate or control. It’s something we let unfold, something that comes naturally, something that’s already there, waiting for us to recognize it. And when we do, we realize that love isn’t just about finding someone who makes us feel good. It’s about finding someone who makes us feel seen, who makes us feel heard, who makes us feel understood. It’s about knowing that, no matter what, we will always have a place with each other, a place where we can be vulnerable, where we can be ourselves without fear of judgment or rejection. When I think about the future, I don’t see a perfect life, free from struggle or hardship. Life isn’t like that. It’s messy, unpredictable, and full of challenges we can’t anticipate. But what I do see is a future where we face everything together. Where we build something strong and lasting, piece by piece, day by day. I see a life where we take the small moments and turn them into something meaningful. A life where we celebrate not just the milestones, but the ordinary moments that make up the majority of our days, the mornings when we share coffee, the nights when we talk about nothing and everything, the quiet moments when we simply exist in the same space, grateful for the fact that we are together. And so, as I reflect on this journey we’re on, I realize that it’s not about achieving some grand idea of love or perfection. It’s about being present for each other, being there through the ups and the downs, the easy days and the difficult ones. It’s about knowing that no matter what happens, no matter how life unfolds, we are in this together. And that’s the greatest gift of all, the gift of sharing a life with someone who makes everything feel more meaningful, more real. In you, I’ve found not just love, but a partner, a companion, a friend. Someone who understands me, who sees me, who challenges me, and who makes me better in every way. And for that, I will always be grateful. You are the love of my life, the peace in my heart, and the soul I’ve been searching for. So today, on your birthday, I celebrate not just the day you were born, but every day that has led you to me. Happy birthday, Talha. I love you endlessly 🤍
+ 
+      </p>
+     </div>
+      <button onclick="goToScrapbook()">Finished Reading</button>
+    </div>
+    <div class="rose-container" id="rose-container"></div>
+  </div>
+
+  <div id="scrapbook-home">
+    <header>
+      <button class="back-arrow" onclick="goBackToMessage()">←</button>
+      <h1>Our Scrapbook♡</h1>
+    </header>
+    <main>
+      <button class="scrap-button" onclick="openPage('memories')">Memories</button>
+      <button class="scrap-button" onclick="openPage('photos')">Photos</button>
+      <button class="scrap-button" onclick="openPage('important-days')">Important Days</button>
+      <button class="scrap-button" onclick="openPage('notes')">Notes</button>
+      <button class="scrap-button" onclick="openPage('more')">More...</button>
+    </main>
+  </div>
+
+  <div id="memories" class="page">
+    <h2>Memories</h2>
+    <p>Write your memories here...</p>
+    <button class="back-button" onclick="goHome()">Back</button>
+  </div>
+
+  <div id="photos" class="page">
+    <h2>Photos</h2>
+    <p>Add your photos here...</p>
+    <button class="back-button" onclick="goHome()">Back</button>
+  </div>
+
+  <div id="important-days" class="page">
+    <h2>Important Days</h2>
+    <p>Mark important days here...</p>
+    <button class="back-button" onclick="goHome()">Back</button>
+  </div>
+
+  <div id="notes" class="page">
+    <h2>Notes</h2>
+    <p>Write your notes here...</p>
+    <button class="back-button" onclick="goHome()">Back</button>
+  </div>
+
+  <div id="more" class="page">
+    <h2>More</h2>
+    <p>More special things...</p>
+    <button class="back-button" onclick="goHome()">Back</button>
+  </div>
+
+  <script>
+    function checkPasscode(event) {
+      event.preventDefault();
+      const input = document.getElementById('passcode-input').value;
+      const errorMessage = document.getElementById('error-message');
+      if (input === "ilovetalha") {
+        document.getElementById('passcode-screen').style.display = "none";
+        document.getElementById('message-screen').style.display = "flex";
+        startRoseAnimation();
+        document.body.style.overflow = "hidden";
+      } else {
+        errorMessage.textContent = "Wrong password entered. Please try again.";
+      }
+    }
+
+    function goToScrapbook() {
+      document.getElementById('message-screen').style.display = "none";
+      document.getElementById('scrapbook-home').style.display = "flex";
+      clearRoses();
+      document.body.style.overflow = "hidden";
+    }
+
+    function openPage(pageId) {
+      document.getElementById('scrapbook-home').style.display = 'none';
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.style.display = 'none');
+      document.getElementById(pageId).style.display = 'flex';
+    }
+
+    function goHome() {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.style.display = 'none');
+      document.getElementById('scrapbook-home').style.display = 'flex';
+    }
+
+    function goBackToMessage() {
+      document.getElementById('scrapbook-home').style.display = 'none';
+      document.getElementById('message-screen').style.display = 'flex';
+    }
+
+    function startRoseAnimation() {
+      const roseContainer = document.getElementById('rose-container');
+      for (let i = 0; i < 20; i++) {
+        const rose = document.createElement('div');
+        rose.classList.add('rose');
+        rose.style.left = Math.random() * 100 + 'vw';
+        rose.style.animationDuration = 4 + Math.random() * 2 + 's';
+        rose.style.animationDelay = Math.random() * 2 + 's';
+        rose.style.top = -100 - Math.random() * 200 + 'px';
+        roseContainer.appendChild(rose);
+      }
+    }
+
+    function clearRoses() {
+      const roseContainer = document.getElementById('rose-container');
+      roseContainer.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
+     
