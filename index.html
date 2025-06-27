@@ -107,7 +107,7 @@
       font-size: 2.5rem;
       margin: 1rem 0;
       color: white;
-    }
+   }
     .back-arrow {
       position: absolute;
       left: 1rem;
@@ -116,9 +116,10 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #000;
+      color: white; /* was black before */
+      z-index: 5;   /* add this */
       transition: color 0.3s;
-    }
+ }
     .back-arrow:hover {
       color: #444;
     }
@@ -316,9 +317,9 @@
     </main>
   </div>
 
- <div id="memories" class="page memories-page">
+<div id="memories" class="page memories-page">
+  <button class="back-arrow" onclick="goHome()">←</button>
   <h2>Memories</h2>
-  <button class="back-button" onclick="goHome()">Back</button>
 </div>
 
   <div id="photos" class="page">
