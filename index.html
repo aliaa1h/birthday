@@ -396,9 +396,16 @@
       const roseContainer = document.getElementById('rose-container');
       roseContainer.innerHTML = '';
     }
-  
-    window.addEventListener('load', () => {
-     document.querySelector('.memories-page')?.classList.add('loaded');
+
+</script>
+  <script>
+  window.addEventListener("load", () => {
+    const bgPage = document.querySelector(".memories-page");
+    const highResImg = new Image();
+    highResImg.src = "https://raw.githubusercontent.com/aliaa1h/birthday/main/memories.jpg";
+    highResImg.onload = () => {
+      bgPage.classList.add("loaded");
+    };
   });
 </script>
 </body>
