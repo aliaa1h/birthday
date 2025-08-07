@@ -279,6 +279,39 @@
     background-image: url('https://raw.githubusercontent.com/aliaa1h/birthday/main/iphonememori.jpg');
   }
 }
+    #game {
+  display: grid;
+  grid-template-columns: repeat(6, 50px);
+  grid-template-rows: repeat(6, 50px);
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.tile {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.tile.danger {
+  background-color: #ff4d4d;
+  box-shadow: 0 0 15px #ff2a2a;
+}
+
+.tile.player {
+  background-color: #000;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 10px #000;
+  font-size: 1.2rem;
+  user-select: none;
+}
   </style>
 </head>
 <body>
@@ -329,9 +362,9 @@
 </div>
 
   <div id="photos" class="page">
-  <h2>Space Shooter MiniGame</h2>
-  <canvas id="gameCanvas" width="320" height="480"></canvas>
-  <div id="game-over" style="color: red; font-size: 1.2rem; margin-top: 10px;"></div>
+  <h2>Escape the Grid</h2>
+  <div id="score">Score: 0</div>
+  <div id="game"></div>
   <button class="back-button" onclick="stopGame(); goHome()">Back</button>
 </div>
 
@@ -376,11 +409,13 @@
     }
 
     function openPage(pageId) {
-     document.getElementById('scrapbook-home').style.display = 'none';
-     const pages = document.querySelectorAll('.page');
-     pages.forEach(page => page.style.display = 'none');
-     document.getElementById(pageId).style.display = 'flex';
-     if (pageId === 'photos') startGame();
+    document.getElementById('scrapbook-home').style.display = 'none';
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.style.display = 'none');
+    document.getElementById(pageId).style.display = 'flex';
+
+    if(pageId === 'photos') startGame();
+    else stopGame();
   }
 
     function goHome() {
@@ -426,102 +461,150 @@
   
   <script>
 
-let canvas, ctx, player, bullets, enemies, gameLoop, keys, gameOver = false;
+let gridSize = 6;
+let gameGrid = [];
+let playerPos = { x: 2, y: 5 }; // start bottom center-ish
+let score = 0;
+let dangerTiles = [];
+let gameInterval, dangerInterval;
+let isGameOver = false;
+
+function createGrid() {
+  const game = document.getElementById('game');
+  game.innerHTML = '';
+  gameGrid = [];
+  for (let y = 0; y < gridSize; y++) {
+    const row = [];
+    for (let x = 0; x < gridSize; x++) {
+      const tile = document.createElement('div');
+      tile.classList.add('tile');
+      tile.dataset.x = x;
+      tile.dataset.y = y;
+      game.appendChild(tile);
+      row.push(tile);
+    }
+    gameGrid.push(row);
+  }
+}
+
+function draw() {
+  for(let y=0; y<gridSize; y++){
+    for(let x=0; x<gridSize; x++){
+      gameGrid[y][x].classList.remove('player', 'danger');
+      gameGrid[y][x].style.backgroundColor = 'rgba(255,255,255,0.9)';
+      gameGrid[y][x].style.boxShadow = '0 0 8px rgba(0,0,0,0.1)';
+    }
+  }
+  // Draw dangers
+  dangerTiles.forEach(({x,y})=>{
+    if(y>=0 && y<gridSize && x>=0 && x<gridSize){
+      gameGrid[y][x].classList.add('danger');
+    }
+  });
+  // Draw player
+  gameGrid[playerPos.y][playerPos.x].classList.add('player');
+  gameGrid[playerPos.y][playerPos.x].textContent = '▣';
+}
+
+function addDangerTile() {
+  // Add a new danger tile randomly on top row or random row (except player's row)
+  let x = Math.floor(Math.random() * gridSize);
+  let y = 0; // start from top row, falling down
+  dangerTiles.push({x,y});
+}
+
+function moveDangersDown() {
+  for(let i = dangerTiles.length - 1; i >= 0; i--) {
+    dangerTiles[i].y++;
+    if(dangerTiles[i].y >= gridSize) {
+      dangerTiles.splice(i, 1);
+      score++;
+      document.getElementById('score').textContent = 'Score: ' + score;
+    }
+  }
+}
+
+function checkCollision() {
+  for(let dt of dangerTiles){
+    if(dt.x === playerPos.x && dt.y === playerPos.y){
+      gameOver();
+      break;
+    }
+  }
+}
+
+function gameOver() {
+  isGameOver = true;
+  clearInterval(gameInterval);
+  clearInterval(dangerInterval);
+  alert('Game Over! Your score: ' + score);
+}
+
+function gameTick() {
+  moveDangersDown();
+  checkCollision();
+  draw();
+}
 
 function startGame() {
-  canvas = document.getElementById("gameCanvas");
-  ctx = canvas.getContext("2d");
-  player = { x: 140, y: 420, width: 40, height: 40 };
-  bullets = [];
-  enemies = [];
-  keys = {};
-  gameOver = false;
-  document.getElementById("game-over").innerText = "";
-  document.addEventListener("keydown", keyDownHandler);
-  document.addEventListener("keyup", keyUpHandler);
-  spawnEnemies();
-  gameLoop = setInterval(updateGame, 1000 / 60);
+  createGrid();
+  playerPos = { x: 2, y: 5 };
+  score = 0;
+  dangerTiles = [];
+  isGameOver = false;
+  document.getElementById('score').textContent = 'Score: 0';
+
+  draw();
+  gameInterval = setInterval(gameTick, 700);
+  dangerInterval = setInterval(addDangerTile, 1500);
+
+  // Setup swipe controls for iPhone/mobile
+  setupSwipeControls();
 }
 
 function stopGame() {
-  clearInterval(gameLoop);
-  document.removeEventListener("keydown", keyDownHandler);
-  document.removeEventListener("keyup", keyUpHandler);
+  clearInterval(gameInterval);
+  clearInterval(dangerInterval);
+  isGameOver = true;
+  removeSwipeControls();
 }
 
-function keyDownHandler(e) {
-  keys[e.key] = true;
-}
+function setupSwipeControls() {
+  let touchStartX = 0;
+  let touchStartY = 0;
 
-function keyUpHandler(e) {
-  keys[e.key] = false;
-}
-
-function spawnEnemies() {
-  setInterval(() => {
-    if (!gameOver) {
-      enemies.push({ x: Math.random() * 280, y: -40, width: 40, height: 40 });
-    }
-  }, 1000);
-}
-
-function updateGame() {
-  if (gameOver) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Move player
-  if (keys["ArrowLeft"] && player.x > 0) player.x -= 4;
-  if (keys["ArrowRight"] && player.x < canvas.width - player.width) player.x += 4;
-
-  // Draw player
-  ctx.fillStyle = "lime";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-
-  // Fire bullets
-  if (keys[" "]) {
-    bullets.push({ x: player.x + 15, y: player.y, width: 10, height: 20 });
+  function touchStart(e) {
+    if(isGameOver) return;
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
   }
-
-  // Update bullets
-  bullets.forEach((b, i) => {
-    b.y -= 6;
-    ctx.fillStyle = "white";
-    ctx.fillRect(b.x, b.y, b.width, b.height);
-    if (b.y < 0) bullets.splice(i, 1);
-  });
-
-  // Update enemies
-  enemies.forEach((e, i) => {
-    e.y += 2;
-    ctx.fillStyle = "red";
-    ctx.fillRect(e.x, e.y, e.width, e.height);
-
-    // Collision with player
-    if (
-      e.x < player.x + player.width &&
-      e.x + e.width > player.x &&
-      e.y < player.y + player.height &&
-      e.y + e.height > player.y
-    ) {
-      gameOver = true;
-      document.getElementById("game-over").innerText = "Game Over!";
-      stopGame();
+  function touchEnd(e) {
+    if(isGameOver) return;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    if(Math.abs(dx) > Math.abs(dy)){
+      if(dx > 30 && playerPos.x < gridSize - 1) playerPos.x++;
+      else if(dx < -30 && playerPos.x > 0) playerPos.x--;
+    } else {
+      if(dy > 30 && playerPos.y < gridSize - 1) playerPos.y++;
+      else if(dy < -30 && playerPos.y > 0) playerPos.y--;
     }
+    draw();
+  }
+  document.getElementById('game').addEventListener('touchstart', touchStart);
+  document.getElementById('game').addEventListener('touchend', touchEnd);
 
-    // Collision with bullets
-    bullets.forEach((b, j) => {
-      if (
-        b.x < e.x + e.width &&
-        b.x + b.width > e.x &&
-        b.y < e.y + e.height &&
-        b.y + b.height > e.y
-      ) {
-        enemies.splice(i, 1);
-        bullets.splice(j, 1);
-      }
-    });
-  });
+  // Save handlers to remove later
+  window._touchStartHandler = touchStart;
+  window._touchEndHandler = touchEnd;
+}
+
+function removeSwipeControls() {
+  const game = document.getElementById('game');
+  if(window._touchStartHandler) game.removeEventListener('touchstart', window._touchStartHandler);
+  if(window._touchEndHandler) game.removeEventListener('touchend', window._touchEndHandler);
 }
 </script>
 </body>
