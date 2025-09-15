@@ -361,13 +361,6 @@
   <h2>Memories</h2>
 </div>
 
-  <div id="photos" class="page">
-  <h2>Escape the Grid</h2>
-  <div id="score">Score: 0</div>
-  <div id="game"></div>
-  <button class="back-button" onclick="stopGame(); goHome()">Back</button>
-</div>
-
   <div id="important-days" class="page">
     <h2>Important Days</h2>
     <p>Mark important days here...</p>
@@ -460,151 +453,87 @@
   </script>
   
   <script>
+  <div id="photos" class="page">
+    <h2>Memory Match</h2>
+    <div id="score">Score: 0</div>
+    <div id="game"></div>
+    <button class="back-button" onclick="stopGame(); goHome()">Back</button>
+  </div>
 
-let gridSize = 6;
-let gameGrid = [];
-let playerPos = { x: 2, y: 5 }; // start bottom center-ish
-let score = 0;
-let dangerTiles = [];
-let gameInterval, dangerInterval;
-let isGameOver = false;
+<script>
+let symbols = ["🍎","🍎","🍌","🍌","🍇","🍇","🍒","🍒","🍊","🍊","🍍","🍍"];
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+let scoreMem = 0;
 
-function createGrid() {
-  const game = document.getElementById('game');
-  game.innerHTML = '';
-  gameGrid = [];
-  for (let y = 0; y < gridSize; y++) {
-    const row = [];
-    for (let x = 0; x < gridSize; x++) {
-      const tile = document.createElement('div');
-      tile.classList.add('tile');
-      tile.dataset.x = x;
-      tile.dataset.y = y;
-      game.appendChild(tile);
-      row.push(tile);
-    }
-    gameGrid.push(row);
-  }
-}
+function createMemoryBoard() {
+  const game = document.getElementById("game");
+  game.innerHTML = "";
+  game.style.display = "grid";
+  game.style.gridTemplateColumns = "repeat(4, 70px)";
+  game.style.gridTemplateRows = "repeat(3, 70px)";
+  game.style.gap = "10px";
 
-function draw() {
-  for(let y=0; y<gridSize; y++){
-    for(let x=0; x<gridSize; x++){
-      gameGrid[y][x].classList.remove('player', 'danger');
-      gameGrid[y][x].style.backgroundColor = 'rgba(255,255,255,0.9)';
-      gameGrid[y][x].style.boxShadow = '0 0 8px rgba(0,0,0,0.1)';
-    }
-  }
-  // Draw dangers
-  dangerTiles.forEach(({x,y})=>{
-    if(y>=0 && y<gridSize && x>=0 && x<gridSize){
-      gameGrid[y][x].classList.add('danger');
-    }
+  // shuffle order each time
+  let shuffled = [...symbols].sort(() => 0.5 - Math.random());
+
+  shuffled.forEach(symbol => {
+    const card = document.createElement("div");
+    card.classList.add("tile");
+    card.dataset.symbol = symbol;
+    card.textContent = "?";
+    card.addEventListener("click", () => flipCard(card));
+    game.appendChild(card);
   });
-  // Draw player
-  gameGrid[playerPos.y][playerPos.x].classList.add('player');
-  gameGrid[playerPos.y][playerPos.x].textContent = '▣';
 }
 
-function addDangerTile() {
-  // Add a new danger tile randomly on top row or random row (except player's row)
-  let x = Math.floor(Math.random() * gridSize);
-  let y = 0; // start from top row, falling down
-  dangerTiles.push({x,y});
-}
+function flipCard(card) {
+  if (lockBoard || card === firstCard || card.textContent !== "?") return;
 
-function moveDangersDown() {
-  for(let i = dangerTiles.length - 1; i >= 0; i--) {
-    dangerTiles[i].y++;
-    if(dangerTiles[i].y >= gridSize) {
-      dangerTiles.splice(i, 1);
-      score++;
-      document.getElementById('score').textContent = 'Score: ' + score;
-    }
+  card.textContent = card.dataset.symbol;
+
+  if (!firstCard) {
+    firstCard = card;
+  } else {
+    secondCard = card;
+    checkMatch();
   }
 }
 
-function checkCollision() {
-  for(let dt of dangerTiles){
-    if(dt.x === playerPos.x && dt.y === playerPos.y){
-      gameOver();
-      break;
+function checkMatch() {
+  if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+    firstCard = null;
+    secondCard = null;
+    scoreMem++;
+    document.getElementById("score").textContent = "Score: " + scoreMem;
+    if (scoreMem === symbols.length / 2) {
+      setTimeout(() => alert("You won! 🎉"), 200);
     }
+  } else {
+    lockBoard = true;
+    setTimeout(() => {
+      firstCard.textContent = "?";
+      secondCard.textContent = "?";
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+    }, 800);
   }
-}
-
-function gameOver() {
-  isGameOver = true;
-  clearInterval(gameInterval);
-  clearInterval(dangerInterval);
-  alert('Game Over! Your score: ' + score);
-}
-
-function gameTick() {
-  moveDangersDown();
-  checkCollision();
-  draw();
 }
 
 function startGame() {
-  createGrid();
-  playerPos = { x: 2, y: 5 };
-  score = 0;
-  dangerTiles = [];
-  isGameOver = false;
-  document.getElementById('score').textContent = 'Score: 0';
-
-  draw();
-  gameInterval = setInterval(gameTick, 700);
-  dangerInterval = setInterval(addDangerTile, 1500);
-
-  // Setup swipe controls for iPhone/mobile
-  setupSwipeControls();
+  scoreMem = 0;
+  document.getElementById("score").textContent = "Score: 0";
+  createMemoryBoard();
 }
 
 function stopGame() {
-  clearInterval(gameInterval);
-  clearInterval(dangerInterval);
-  isGameOver = true;
-  removeSwipeControls();
-}
-
-function setupSwipeControls() {
-  let touchStartX = 0;
-  let touchStartY = 0;
-
-  function touchStart(e) {
-    if(isGameOver) return;
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-  }
-  function touchEnd(e) {
-    if(isGameOver) return;
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    if(Math.abs(dx) > Math.abs(dy)){
-      if(dx > 30 && playerPos.x < gridSize - 1) playerPos.x++;
-      else if(dx < -30 && playerPos.x > 0) playerPos.x--;
-    } else {
-      if(dy > 30 && playerPos.y < gridSize - 1) playerPos.y++;
-      else if(dy < -30 && playerPos.y > 0) playerPos.y--;
-    }
-    draw();
-  }
-  document.getElementById('game').addEventListener('touchstart', touchStart);
-  document.getElementById('game').addEventListener('touchend', touchEnd);
-
-  // Save handlers to remove later
-  window._touchStartHandler = touchStart;
-  window._touchEndHandler = touchEnd;
-}
-
-function removeSwipeControls() {
-  const game = document.getElementById('game');
-  if(window._touchStartHandler) game.removeEventListener('touchstart', window._touchStartHandler);
-  if(window._touchEndHandler) game.removeEventListener('touchend', window._touchEndHandler);
+  const game = document.getElementById("game");
+  game.innerHTML = "";
+  firstCard = null;
+  secondCard = null;
+  lockBoard = false;
 }
 </script>
 </body>
