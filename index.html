@@ -379,6 +379,13 @@
     <button class="back-button" onclick="goHome()">Back</button>
   </div>
 
+  <div id="photos" class="page">
+    <h2>Memory Match</h2>
+    <div id="score">Score: 0</div>
+    <div id="game"></div>
+    <button class="back-button" onclick="stopGame(); goHome()">Back</button>
+ </div>
+
   <script>
     function checkPasscode(event) {
       event.preventDefault();
@@ -451,14 +458,6 @@
     };
   });
   </script>
-  
-  <script>
-  <div id="photos" class="page">
-    <h2>Memory Match</h2>
-    <div id="score">Score: 0</div>
-    <div id="game"></div>
-    <button class="back-button" onclick="stopGame(); goHome()">Back</button>
-  </div>
 
 <script>
 let symbols = ["🍎","🍎","🍌","🍌","🍇","🍇","🍒","🍒","🍊","🍊","🍍","🍍"];
