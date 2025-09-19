@@ -164,45 +164,53 @@
      padding: 2rem;
      color: white;
      overflow: hidden;
-  }
-
-    .memories-page::before {
-     content: "";
-     position: absolute;
-     top: 0; left: 0; right: 0; bottom: 0;
      background: url('https://raw.githubusercontent.com/aliaa1h/birthday/main/memories.jpg') no-repeat center center;
      background-size: cover;
-     filter: blur(20px);
-     transform: scale(1.05);
-     transition: opacity 1s ease;
-     opacity: 1;
-     z-index: 1;
-}
+   }
 
+    @media (max-width: 600px) {
+    .memories-page {
+     background: url('https://raw.githubusercontent.com/aliaa1h/birthday/main/iphonememori.jpg') no-repeat center center;
+     background-size: cover;
+   }
+ }
+
+   /* blur/transition layers */
+   .memories-page::before,
     .memories-page::after {
      content: "";
      position: absolute;
      top: 0; left: 0; right: 0; bottom: 0;
-     background: url('https://raw.githubusercontent.com/aliaa1h/birthday/main/memories.jpg') no-repeat center center;
      background-size: cover;
-     opacity: 0;
      transition: opacity 1s ease;
-     z-index: 2;
-}
+     z-index: 1;
+   }
 
-    .memories-page.loaded::before {
+   .memories-page::before {
+     background-image: inherit; /* use same background */
+     filter: blur(20px);
+     transform: scale(1.05);
+     opacity: 1;
+   }
+
+   .memories-page::after {
+     background-image: inherit; /* use same background */
      opacity: 0;
-}
+   }
 
-    .memories-page.loaded::after {
-      opacity: 1;
-}
+   .memories-page.loaded::before {
+     opacity: 0;
+   }
 
-    .memories-page header h1 {
-     position: relative; /* keep it above pseudo elements */
+   .memories-page.loaded::after {
+     opacity: 1;
+   }
+
+   .memories-page header h1 {
+     position: relative;
      color: white !important;
      z-index: 3;
-}
+   }
 
     .page h2 {
      font-size: 2rem;
