@@ -320,6 +320,17 @@
   font-size: 1.2rem;
   user-select: none;
 }
+    .scroll-box {
+     height: 70vh;
+     width: 80%;            
+     max-width: 800px;
+     background: #fff;
+     border: 2px solid #ccc;
+     border-radius: 12px;
+     padding: 20px;
+     overflow-y: auto;         /* makes it scroll */
+     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
   </style>
 </head>
 <body>
@@ -358,7 +369,7 @@
     <main>
       <button class="scrap-button" onclick="openPage('memories')">Memories</button>
       <button class="scrap-button" onclick="openPage('photos')">MiniGame</button>
-      <button class="scrap-button" onclick="openPage('important-days')">Important Days</button>
+      <button class="scrap-button" onclick="openPage('important-days')">story</button>
       <button class="scrap-button" onclick="openPage('notes')">Notes</button>
       <button class="scrap-button" onclick="openPage('more')">More...</button>
     </main>
@@ -369,11 +380,16 @@
   <h2>Memories</h2>
 </div>
 
-  <div id="important-days" class="page">
-    <h2>Important Days</h2>
-    <p>Mark important days here...</p>
-    <button class="back-button" onclick="goHome()">Back</button>
+  <div id="story" class="page">
+  <div class="scroll-box">
+    <p>
+      Write your long text here…  
+      It can be as long as you want and the box will scroll,  
+      just like the message box on the first screen.
+    </p>
   </div>
+  <button class="back-button" onclick="goHome()">Back</button>
+</div>
 
   <div id="notes" class="page">
     <h2>Notes</h2>
