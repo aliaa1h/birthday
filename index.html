@@ -451,32 +451,31 @@
 
 function startRoseAnimation() {
   const roseContainer = document.getElementById('rose-container');
-  roseContainer.innerHTML = ""; // reset first
-
-  for (let i = 0; i < 25; i++) {
-    const rose = document.createElement('div');
-    rose.classList.add('rose');
-
-    // randomize size, position & duration
-    const size = 30 + Math.random() * 20; 
-    rose.style.width = size + "px";
-    rose.style.height = size + "px";
-    rose.style.left = Math.random() * 100 + "vw";
-    rose.style.animationDuration = (3 + Math.random() * 2) + "s";
-    rose.style.animationDelay = (Math.random() * 1.2) + "s";
-
-    roseContainer.appendChild(rose);
-
-    // remove rose after it falls
-    rose.addEventListener("animationend", () => {
-      rose.remove();
-    });
-  }
-}
-
-function clearRoses() {
-  const roseContainer = document.getElementById('rose-container');
   roseContainer.innerHTML = "";
+
+  let roseCount = 25; // total roses
+  for (let i = 0; i < roseCount; i++) {
+    setTimeout(() => {
+      const rose = document.createElement('div');
+      rose.classList.add('rose');
+
+      const size = 30 + Math.random() * 20;
+      rose.style.width = size + "px";
+      rose.style.height = size + "px";
+      rose.style.left = Math.random() * 100 + "vw";
+
+      // randomize fall duration & delay for each rose
+      rose.style.animationDuration = (3 + Math.random() * 2) + "s";
+      rose.style.animationDelay = "0s"; // starts right away
+      rose.style.top = (-100 - Math.random() * 300) + "px"; // some higher, some lower
+
+      roseContainer.appendChild(rose);
+
+      rose.addEventListener("animationend", () => {
+        rose.remove();
+      });
+    }, i * 200); // each rose delayed by 200ms
+  }
 }
 
 </script>
