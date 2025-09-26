@@ -233,38 +233,36 @@
       background: #444;
     }
 
-    /* Rose animation */
     .rose-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 10;
-    }
-    
-    .rose {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background-image: url('https://pngimg.com/d/rose_PNG66714.png');
-      background-size: cover;
-      opacity: 0.8;
-      animation: fall linear forwards;
-    }
-    
-    @keyframes fall {
-      0% {
-        transform: translateY(-150px) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(110vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.rose {
+  position: absolute;
+  background-image: url('https://pngimg.com/d/rose_PNG66714.png');
+  background-size: cover;
+  will-change: transform, opacity;
+  opacity: 0.9;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-120px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
     
     @media (max-width: 600px) {
      .scrap-button {
@@ -453,30 +451,33 @@
 
 function startRoseAnimation() {
   const roseContainer = document.getElementById('rose-container');
-  roseContainer.innerHTML = ""; // clear any old roses first
+  roseContainer.innerHTML = ""; // reset first
 
-  // spawn roses instantly
   for (let i = 0; i < 25; i++) {
     const rose = document.createElement('div');
     rose.classList.add('rose');
 
-    // randomize size, position, and speed
-    rose.style.left = Math.random() * 100 + 'vw';
-    rose.style.width = rose.style.height = 25 + Math.random() * 25 + 'px';
-    rose.style.opacity = (0.6 + Math.random() * 0.4).toFixed(2);
-    rose.style.animationDuration = 4 + Math.random() * 2 + 's';
-    rose.style.animationDelay = Math.random() * 1.5 + 's';
-    rose.style.top = -100 - Math.random() * 150 + 'px';
+    // randomize size, position & duration
+    const size = 30 + Math.random() * 20; 
+    rose.style.width = size + "px";
+    rose.style.height = size + "px";
+    rose.style.left = Math.random() * 100 + "vw";
+    rose.style.animationDuration = (3 + Math.random() * 2) + "s";
+    rose.style.animationDelay = (Math.random() * 1.2) + "s";
 
     roseContainer.appendChild(rose);
 
-    // remove each rose after animation ends
-    rose.addEventListener('animationend', () => {
+    // remove rose after it falls
+    rose.addEventListener("animationend", () => {
       rose.remove();
     });
   }
 }
-   
+
+function clearRoses() {
+  const roseContainer = document.getElementById('rose-container');
+  roseContainer.innerHTML = "";
+}
 
 </script>
   <script>
