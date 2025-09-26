@@ -455,30 +455,21 @@
   const roseContainer = document.getElementById('rose-container');
   if (!roseContainer) return;
 
-  function createRose() {
+  const roseCount = 20; // total roses for this burst
+
+  for (let i = 0; i < roseCount; i++) {
     const rose = document.createElement('div');
     rose.classList.add('rose');
     rose.style.left = Math.random() * 100 + 'vw';
-    rose.style.animationDuration = 4 + Math.random() * 3 + 's';
-    rose.style.opacity = Math.random() * 0.5 + 0.5;
+    rose.style.animationDuration = (3 + Math.random() * 2) + 's'; // 3-5s fall
+    rose.style.animationDelay = Math.random() * 2 + 's'; // random start
     roseContainer.appendChild(rose);
 
+    // Remove rose after it finishes falling
     rose.addEventListener('animationend', () => {
       rose.remove();
     });
   }
-
-  const roseInterval = setInterval(createRose, 300);
-  roseContainer.dataset.intervalId = roseInterval.toString();
-}
-
-function clearRoses() {
-  const roseContainer = document.getElementById('rose-container');
-  if (!roseContainer) return;
-
-  const intervalId = parseInt(roseContainer.dataset.intervalId);
-  clearInterval(intervalId);
-  roseContainer.innerHTML = '';
 }
 
    
