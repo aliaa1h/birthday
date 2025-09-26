@@ -452,22 +452,36 @@
     }
 
     function startRoseAnimation() {
-      const roseContainer = document.getElementById('rose-container');
-      for (let i = 0; i < 20; i++) {
-        const rose = document.createElement('div');
-        rose.classList.add('rose');
-        rose.style.left = Math.random() * 100 + 'vw';
-        rose.style.animationDuration = 4 + Math.random() * 2 + 's';
-        rose.style.animationDelay = Math.random() * 2 + 's';
-        rose.style.top = -100 - Math.random() * 200 + 'px';
-        roseContainer.appendChild(rose);
-      }
-    }
+  const roseContainer = document.getElementById('rose-container');
 
-    function clearRoses() {
-      const roseContainer = document.getElementById('rose-container');
-      roseContainer.innerHTML = '';
-    }
+  function createRose() {
+    const rose = document.createElement('div');
+    rose.classList.add('rose');
+    rose.style.left = Math.random() * 100 + 'vw';
+    rose.style.animationDuration = 4 + Math.random() * 3 + 's';
+    rose.style.opacity = Math.random() * 0.5 + 0.5; // random opacity
+    roseContainer.appendChild(rose);
+
+    // Remove rose when animation ends
+    rose.addEventListener('animationend', () => {
+      rose.remove();
+    });
+  }
+
+  // Spawn a rose every 300ms
+  const roseInterval = setInterval(createRose, 300);
+
+  // Store interval so we can stop later
+  roseContainer.dataset.intervalId = roseInterval;
+}
+
+function clearRoses() {
+  const roseContainer = document.getElementById('rose-container');
+  clearInterval(roseContainer.dataset.intervalId); // stop new roses
+  roseContainer.innerHTML = ''; // remove existing
+}
+
+   
 
 </script>
   <script>
