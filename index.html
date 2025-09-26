@@ -455,21 +455,28 @@
   const roseContainer = document.getElementById('rose-container');
   if (!roseContainer) return;
 
-  const roseCount = 20; // total roses for this burst
+  const totalRoses = 20; // total roses for the burst
+  let rosesCreated = 0;
 
-  for (let i = 0; i < roseCount; i++) {
+  const roseInterval = setInterval(() => {
+    if (rosesCreated >= totalRoses) {
+      clearInterval(roseInterval); // stop spawning new roses
+      return;
+    }
+
     const rose = document.createElement('div');
     rose.classList.add('rose');
     rose.style.left = Math.random() * 100 + 'vw';
     rose.style.animationDuration = (3 + Math.random() * 2) + 's'; // 3-5s fall
-    rose.style.animationDelay = Math.random() * 2 + 's'; // random start
     roseContainer.appendChild(rose);
 
-    // Remove rose after it finishes falling
+    // Remove rose after animation ends
     rose.addEventListener('animationend', () => {
       rose.remove();
     });
-  }
+
+    rosesCreated++;
+  }, 300); // spawn one rose every 300ms
 }
 
    
