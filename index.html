@@ -645,6 +645,18 @@ function renderList() {
     span.style.marginLeft = '10px';
     span.style.textDecoration = item.done ? 'line-through' : 'none';
 
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '×';
+    delBtn.style.marginLeft = '10px';
+    delBtn.style.background = 'black'; // changed to black
+    delBtn.style.border = 'none';
+    delBtn.style.color = 'white';
+    delBtn.style.borderRadius = '50%';
+    delBtn.style.width = '24px';
+    delBtn.style.height = '24px';
+    delBtn.style.cursor = 'pointer';
+    delBtn.onclick = () => deleteItem(index);
+
     li.appendChild(checkbox);
     li.appendChild(span);
     ul.appendChild(li);
