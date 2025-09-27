@@ -68,16 +68,12 @@
     .box button:hover {
       background: #444;
     }
-    #passcode-screen .box #error-message {
-     min-height: 1.2rem; /* keeps space reserved */
+    #error-message {
      margin-top: 10px;
      color: red;
      font-size: 0.9rem;
+     min-height: 1.2em; /* reserve space for error text */
    }
-
-#error-message:empty::before {
-  content: "\00a0"; /* keeps the space even when empty */
-}
     #message-screen {
       display: none;
       background: linear-gradient(135deg, #fff 50%, #000 50%);
