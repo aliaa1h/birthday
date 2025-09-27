@@ -69,11 +69,12 @@
       background: #444;
     }
     #error-message {
+     height: 1.2em; /* always reserve space so box never resizes */
      margin-top: 10px;
      color: red;
      font-size: 0.9rem;
-     min-height: 1.2em; /* reserve space for error text */
-   }
+     text-align: center;
+  }
     #message-screen {
       display: none;
       background: linear-gradient(135deg, #fff 50%, #000 50%);
@@ -468,18 +469,19 @@
 
   <script>
     function checkPasscode(event) {
-      event.preventDefault();
-      const input = document.getElementById('passcode-input').value;
-      const errorMessage = document.getElementById('error-message');
-      if (input === "ilovetalha") {
-        document.getElementById('passcode-screen').style.display = "none";
-        document.getElementById('message-screen').style.display = "flex";
-        startRoseAnimation();
-        document.body.style.overflow = "hidden";
-      } else {
-        errorMessage.textContent = "Wrong password entered. Please try again.";
-      }
-    }
+     event.preventDefault();
+     const input = document.getElementById('passcode-input').value;
+     const errorMessage = document.getElementById('error-message');
+     if (input === "ilovetalha") {
+       errorMessage.textContent = ""; // clear error
+       document.getElementById('passcode-screen').style.display = "none";
+       document.getElementById('message-screen').style.display = "flex";
+       startRoseAnimation();
+       document.body.style.overflow = "hidden";
+   } else {
+     errorMessage.textContent = "Wrong password entered. Please try again.";
+   }
+ }
 
     function goToScrapbook() {
       document.getElementById('message-screen').style.display = "none";
