@@ -624,33 +624,34 @@ function stopGame() {
   lockBoard = false;
 }
 </script>
-  <script>
-// Get saved list from localStorage
+ <script>
 let bucketList = JSON.parse(localStorage.getItem('bucketList')) || [];
 
-// Render list on page
 function renderList() {
-  const ul = document.getElementById('bucket-list');
-  ul.innerHTML = '';
+  const listContainer = document.getElementById('bucket-list');
+  listContainer.innerHTML = '';
+
   bucketList.forEach((item, index) => {
     const li = document.createElement('li');
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.marginBottom = '8px';
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = item.done;
     checkbox.onchange = () => toggleDone(index);
 
-    const span = document.createElement('span');
-    span.textContent = item.text;
-    span.style.marginLeft = '10px';
-    span.style.textDecoration = item.done ? 'line-through' : 'none';
+    const text = document.createElement('span');
+    text.textContent = item.text;
+    text.style.marginLeft = '8px';
 
     const delBtn = document.createElement('button');
     delBtn.textContent = '×';
-    delBtn.style.marginLeft = '10px';
-    delBtn.style.background = 'black'; // changed to black
-    delBtn.style.border = 'none';
+    delBtn.style.marginLeft = 'auto';
+    delBtn.style.background = 'black';
     delBtn.style.color = 'white';
+    delBtn.style.border = 'none';
     delBtn.style.borderRadius = '50%';
     delBtn.style.width = '24px';
     delBtn.style.height = '24px';
@@ -658,32 +659,31 @@ function renderList() {
     delBtn.onclick = () => deleteItem(index);
 
     li.appendChild(checkbox);
-    li.appendChild(span);
-    ul.appendChild(li);
+    li.appendChild(text);
+    li.appendChild(delBtn);
+
+    listContainer.appendChild(li);
   });
+
+  localStorage.setItem('bucketList', JSON.stringify(bucketList));
 }
 
-// Add new item
 function addItem() {
   const input = document.getElementById('new-item');
-  const text = input.value.trim();
-  if (!text) return;
-  bucketList.push({ text, done: false });
-  saveList();
+  if (!input.value) return;
+  bucketList.push({ text: input.value, done: false });
   input.value = '';
   renderList();
 }
 
-// Toggle done
-function toggleDone(index) {
-  bucketList[index].done = !bucketList[index].done;
-  saveList();
+function deleteItem(index) {
+  bucketList.splice(index, 1);
   renderList();
 }
 
-// Save list to localStorage
-function saveList() {
-  localStorage.setItem('bucketList', JSON.stringify(bucketList));
+function toggleDone(index) {
+  bucketList[index].done = !bucketList[index].done;
+  renderList();
 }
 
 // Initial render
