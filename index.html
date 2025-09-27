@@ -330,6 +330,57 @@
      overflow-y: auto;         /* makes it scroll */
      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   }
+    .bucket-box {
+  width: 90%;
+  max-width: 500px;
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+.bucket-box input[type="text"] {
+  width: 70%;
+  padding: 0.7rem;
+  border: 2px solid #333;
+  border-radius: 12px;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.bucket-box button {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  background: #000;
+  color: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.bucket-box button:hover {
+  background: #444;
+}
+
+#bucket-list {
+  list-style: none;
+  margin-top: 15px;
+  padding-left: 0;
+}
+
+#bucket-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+#bucket-list li input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -366,9 +417,9 @@
     </header>
     <main>
       <button class="scrap-button" onclick="openPage('memories')">Memories</button>
-      <button class="scrap-button" onclick="openPage('photos')">MiniGame</button>
-      <button class="scrap-button" onclick="openPage('story')">story</button>
-      <button class="scrap-button" onclick="openPage('notes')">Notes</button>
+      <button class="scrap-button" onclick="openPage('MiniGame')">MiniGame</button>
+      <button class="scrap-button" onclick="openPage('Story1')">Story1</button>
+      <button class="scrap-button" onclick="openPage('Story2')">Story2</button>
       <button class="scrap-button" onclick="openPage('more')">More...</button>
     </main>
   </div>
@@ -378,7 +429,7 @@
   <h2>Memories</h2>
 </div>
 
-  <div id="story" class="page">
+  <div id="Story1" class="page">
   <div class="scroll-box">
     <p>
       Bazen düşünüyorum, hayatın içindeki en sıradan günler aslında en büyük başlangıçları saklıyormuş. Seninle tanıştığımız gün de öyleydi. Sıradan bir gündü, hiçbir işaret yoktu, hiçbir şey farklı değildi, ama sen oradaydın. Ve bilmeden, fark etmeden, benim içimde yepyeni bir şey başladı. İlk başta anlamadım, belki de anlamak istemedim, ama birkaç gün sonra kendimi hep seni düşünürken buldum. O düşünceler önce küçücük bir kıpırtıydı, sonra dalga dalga büyüdü. Zaman geçtikçe fark ettim ki seninle olan her şey, en küçük an bile, bana normalden daha derin geliyordu. Konuşmalarımız bazen sıradan konular üzerineydi, gülmelerimiz belki basit şeyler yüzündendi, ama içimde hep başka bir şey taşıyordu. Sanki kelimelerin arkasında görünmeyen bir bağ vardı. Dışarıdan bakan biri bunu asla fark etmezdi, ama ben her saniyesini hissediyordum. Ve sonra o gün geldi, 17 Aralık. Sadece sen ve ben, ilk defa bir arada, bir ekrandan birbirimizin sesini duyarak. Bunu tarif etmek zor, ama o an bana çok şey öğretti. Sesin bana bir anda hem huzur hem de bir çeşit varoluş düşüncesi getirdi. Hani bazen bir şey olur ve hissedersin ki dünya artık eskisi gibi olmayacak? İşte öyle bir andı. Zaman durmuş gibiydi, sanki evren bana fısıldıyordu: “Artık hiçbir şey eskisi gibi olmayacak.” Bazen kendi kendime soruyorum, ya sen hiç hayatıma girmeseydin? Her şey aynı mı olurdu? Hayır. Buna eminim. Çünkü sen bana varlığın başka bir tarafını gösterdin. Ben anlamı kitaplarda, felsefelerde arıyordum, ama anlamın aslında çok daha basit ve çok daha derin bir yerde olduğunu seninle öğrendim: bir gülüşte, bir bakışta, bir seste. Seninle anladım ki bazen hayatın felsefesi tek bir insanda saklı olabilir. Seninle olduğum her gün, bana şunu hatırlatıyor: zaman sadece saatlerden ibaret değil. Zaman, kalbin ritmiyle ölçülüyor. Ve benim kalbim, seni tanıdığım günden beri farklı çarpıyor. O yüzden takvimler, rakamlar, günler artık önemsiz geliyor. Benim için zaman, seninle başladı, seninle ilerliyor, ve seninle anlam kazanıyor. Seninle var olan her an, bana bütün hayatı sorgulatıyor ama aynı zamanda bütün cevapları veriyor.
@@ -387,19 +438,26 @@
   <button class="back-button" onclick="goHome()">Back</button>
 </div>
 
-  <div id="notes" class="page">
-    <h2>Notes</h2>
-    <p>Write your notes here...</p>
+  <div id="Story2" class="page">
+    <div class="scroll-box">
+    <p
+      >Write your notes here...
+    </p>
+    </div>
     <button class="back-button" onclick="goHome()">Back</button>
   </div>
 
   <div id="more" class="page">
-    <h2>More</h2>
-    <p>More special things...</p>
-    <button class="back-button" onclick="goHome()">Back</button>
+  <h2>Bucket List</h2>
+  <div class="bucket-box">
+    <input type="text" id="new-item" placeholder="Add a new item..." />
+    <button onclick="addItem()">Add</button>
+    <ul id="bucket-list"></ul>
   </div>
+  <button class="back-button" onclick="goHome()">Back</button>
+</div>
 
-  <div id="photos" class="page">
+  <div id="MiniGame" class="page">
     <h2>Memory Match</h2>
     <div id="score">Score: 0</div>
     <div id="game"></div>
@@ -565,6 +623,59 @@ function stopGame() {
   secondCard = null;
   lockBoard = false;
 }
+</script>
+  <script>
+// Get saved list from localStorage
+let bucketList = JSON.parse(localStorage.getItem('bucketList')) || [];
+
+// Render list on page
+function renderList() {
+  const ul = document.getElementById('bucket-list');
+  ul.innerHTML = '';
+  bucketList.forEach((item, index) => {
+    const li = document.createElement('li');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = item.done;
+    checkbox.onchange = () => toggleDone(index);
+
+    const span = document.createElement('span');
+    span.textContent = item.text;
+    span.style.marginLeft = '10px';
+    span.style.textDecoration = item.done ? 'line-through' : 'none';
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    ul.appendChild(li);
+  });
+}
+
+// Add new item
+function addItem() {
+  const input = document.getElementById('new-item');
+  const text = input.value.trim();
+  if (!text) return;
+  bucketList.push({ text, done: false });
+  saveList();
+  input.value = '';
+  renderList();
+}
+
+// Toggle done
+function toggleDone(index) {
+  bucketList[index].done = !bucketList[index].done;
+  saveList();
+  renderList();
+}
+
+// Save list to localStorage
+function saveList() {
+  localStorage.setItem('bucketList', JSON.stringify(bucketList));
+}
+
+// Initial render
+renderList();
 </script>
 </body>
 </html>
